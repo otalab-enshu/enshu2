@@ -18,8 +18,8 @@ class YoloxNode:
 
         # Yolox module from https://github.com/Kazuhito00/YOLOX-ONNX-TFLite-Sample
         rospy.loginfo("Setup Yolox nano model")
-        # self.targets = ["stop sign", "traffic light", "person"]
-        # rospy.loginfo(f"Target labels: {self.targets}")
+        self.targets = ["stop sign", "traffic light", "person"]
+        rospy.loginfo(f"Target labels: {self.targets}")
         self.show_img = False
         self.score_th = 0.3
         input_shape = (416, 416)
@@ -53,6 +53,9 @@ class YoloxNode:
         rospy.loginfo("Publishing bounding box results: /bbox_results")
 
     def callback(self, img_msg):
+        # Log once to see images are coming
+        rospy.loginfo_once("image callback")
+        
         # decode image
         img = cv2.imdecode(np.frombuffer(img_msg.data, np.uint8), cv2.IMREAD_COLOR)
 
@@ -66,9 +69,9 @@ class YoloxNode:
                 continue
             # Class label
             label = str(self.labels[int(class_id)])
-            # if not label in self.targets:
-            #     # rospy.logdebug(f"{label} is ignored. Not in targets.")
-            #     continue
+            if not label in self.targets:
+                # rospy.loginfo(f"{label} is ignored. Not in targets.")
+                continue
 
             x1, y1, x2, y2 = int(bbox[0]), int(bbox[1]), int(bbox[2]), int(bbox[3])
             # Upper left point

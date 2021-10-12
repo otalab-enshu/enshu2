@@ -27,10 +27,8 @@ int main(int argc, char** argv)
   cv::Scalar FONT_BLUE = cv::Scalar(255, 0, 0);
   cv::Scalar FONT_BLACK = cv::Scalar(0, 0, 0);
   cv::Scalar FONT_WHITE = cv::Scalar(255, 255, 255);
-  std::vector<cv::Scalar> COLORS = { cv::Scalar(200, 0, 0),  cv::Scalar(0, 200, 0),   cv::Scalar(200, 200, 0),
-                                     cv::Scalar(0, 0, 200),  cv::Scalar(200, 0, 200), cv::Scalar(0, 200, 200),
-                                     cv::Scalar(100, 0, 50), cv::Scalar(50, 100, 0),  cv::Scalar(200, 100, 0),
-                                     cv::Scalar(0, 50, 100), cv::Scalar(100, 0, 200), cv::Scalar(0, 100, 200) };
+  std::vector<cv::Scalar> COLORS = { cv::Scalar(200, 0, 0),   cv::Scalar(0, 200, 0),   cv::Scalar(0, 0, 200),
+                                     cv::Scalar(200, 0, 200), cv::Scalar(200, 200, 0), cv::Scalar(0, 200, 200) };
   std::hash<std::string> hasher;
 
   // Main loop
@@ -58,14 +56,20 @@ int main(int argc, char** argv)
       double v = 0;
       double omega = 0;
 
+      /////////////////////////////////////////////
+      // Only three type of object can be detected
+      // - stop sign
+      // - person
+      // - traffic light
       for (int i = 0; i < detection.size(); i++)
       {
         BBox bbox = detection[i];
+        cv::Point2i center = (bbox.ul + bbox.br) / 2;
+        cv::Point2i size = (bbox.br - bbox.ul);
+        ROS_INFO("[%s] center:(%d, %d), width:%d, height:%d", bbox.label.c_str(), center.y, center.x, size.x, size.y);
+
         if (bbox.label == "stop sign")
         {
-          cv::Point2i center = (bbox.ul + bbox.br) / 2;
-          cv::Point2i size = (bbox.br - bbox.ul);
-          ROS_INFO("Stop sign center:(%d, %d), width:%d, height:%d", center.y, center.x, size.x, size.y);
           if (center.x < center_i - 50)
           {
             v = 0.02;
