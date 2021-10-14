@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="enshu3" name="yolox_node" type="yolox_nano_node.py" output="screen"/>
+</launch>

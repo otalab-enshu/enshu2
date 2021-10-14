@@ -1,0 +1,4 @@
+<launch>
+    <include file="rgb_only_realsense.launch"/>
+    <include file="$(find turtlebot3_bringup)/launch/turtlebot3_robot.launch"/>
+</launch>
