@@ -13,7 +13,9 @@ int main(int argc, char** argv)
   // ROS node
   ros::init(argc, argv, "enshu3_driving");
   DetectionCamera camera;
-  MyRobot robot;
+  ros::NodeHandle n;
+  ros::Rate rate(MAIN_RATE);
+  MyRobot robot(n, rate);
 
   // Font setting
   std::string text_contents;
@@ -32,7 +34,6 @@ int main(int argc, char** argv)
   std::hash<std::string> hasher;
 
   // Main loop
-  ros::Rate rate(10);
   while (ros::ok())
   {
     int ls = robot.get_ls();

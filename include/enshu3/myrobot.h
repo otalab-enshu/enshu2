@@ -2,17 +2,20 @@
 // clang-format off
 #include <ros/ros.h>
 #include <std_msgs/String.h>
+#include <std_msgs/Empty.h>
 #include <turtlebot3_msgs/SensorState.h>
 #include <geometry_msgs/Twist.h>
 #include <nav_msgs/Odometry.h>
 
 const double BURGER_MAX_LIN_VEL = 0.22;
 const double BURGER_MAX_ANG_VEL = 2.84;
+const int MAIN_RATE = 10;
 
 class MyRobot
 {
     private:
         ros::Publisher pub_vel_;
+        ros::Publisher reset_odom_;
         ros::Subscriber sensor_state_;
         ros::Subscriber odom_;
         int ls_ = 0;
@@ -21,6 +24,7 @@ class MyRobot
         double y_ = 0.0;
         double theta_ = 0.0;
         ros::Time t_start_;
+        ros::Rate rate_;
 
     double clip(double n, double abs_max) 
     {
@@ -42,12 +46,14 @@ class MyRobot
     }
 
     public:
-        MyRobot()
+        MyRobot(ros::NodeHandle& n, ros::Rate& rate):rate_(rate)
         {
-            ros::NodeHandle n;
             pub_vel_ = n.advertise<geometry_msgs::Twist>("/cmd_vel", 1);
+            reset_odom_ = n.advertise<std_msgs::Empty>("/reset", 1);
             sensor_state_ = n.subscribe("/sensor_state", 1, &MyRobot::setSensor, this);
             odom_ = n.subscribe("/odom", 1, &MyRobot::setOdom, this);
+            wait(0.3);
+            reset();
             t_start_= ros::Time::now();
         }
 
@@ -82,6 +88,8 @@ class MyRobot
             msg.linear.x = clip(v, BURGER_MAX_LIN_VEL);
             msg.angular.z = clip(omega, BURGER_MAX_ANG_VEL);
             pub_vel_.publish(msg);
+            ros::spinOnce();
+            rate_.sleep();
         }
 
         void stop()
@@ -90,11 +98,32 @@ class MyRobot
             msg.linear.x = 0.;
             msg.angular.z = 0.;
             pub_vel_.publish(msg);
+            ros::spinOnce();
+            rate_.sleep();
         }
 
         void wait(double t)
         {
-            ros::Duration(t).sleep();
+            int count = int(t*MAIN_RATE);
+            for(int i = 0; i <  count; i++)
+            {
+                ros::spinOnce();
+                rate_.sleep();
+            }
+        }
+
+        void reset()
+        {
+            stop();
+            ROS_INFO("Resetting Odometry...");
+            std_msgs::Empty empty;
+            reset_odom_.publish(empty);
+            for(int i = 0; i < MAIN_RATE*3.; i++)
+            {
+                ros::spinOnce();
+                rate_.sleep();
+            }
+            ROS_INFO("Done");
         }
 
         double get_time()
