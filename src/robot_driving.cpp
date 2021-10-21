@@ -36,7 +36,7 @@ int main(int argc, char** argv)
       double omega = 0;
 
       // Set robot velocity according to the detected object
-      // (Only three type of object can be detected)
+      // (Only the following types of objects can be detected)
       // - stop sign
       // - person
       // - cat
