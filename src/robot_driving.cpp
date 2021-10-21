@@ -7,7 +7,6 @@
 #include "enshu3/detection_camera.hpp"
 #include "enshu3/myrobot.h"
 
-///////////////////////////////////////////////////
 int main(int argc, char** argv)
 {
   // ROS node
@@ -53,12 +52,12 @@ int main(int argc, char** argv)
 
         if (bbox.label == "stop sign")
         {
-          if (center_x < 640 - 50)
+          if (center_x < (640 / 2) - 50)
           {
             v = 0.02;
             omega = 0.2;
           }
-          else if (center_x > 640 + 50)
+          else if (center_x > (640 / 2) + 50)
           {
             v = 0.02;
             omega = -0.2;
@@ -75,14 +74,14 @@ int main(int argc, char** argv)
       robot.move(v, omega);
 
       /// Display robot command
-      camera.add_command(v,omega);
+      camera.add_command(v, omega);
       /// Display detections
       camera.add_detection();
       /// Show image
       camera.show_img();
     }
-    
-    //////////// <write your code to here> /////////////
+
+    ////////////////////////////////////////////////////////
     ros::spinOnce();
     rate.sleep();
   }
