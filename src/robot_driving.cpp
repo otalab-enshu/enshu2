@@ -53,16 +53,19 @@ int main(int argc, char** argv)
 
         if (bbox.label == "stop sign")
         {
-          if (center_x < 1280- 50)
+          if (center_x < 640 - 50)
           {
+            v = 0.02;
             omega = 0.2;
           }
-          else if (center_x > 1280 + 50)
+          else if (center_x > 640 + 50)
           {
+            v = 0.02;
             omega = -0.2;
           }
           else
           {
+            v = 0.04;
             omega = 0.0;
           }
         }
