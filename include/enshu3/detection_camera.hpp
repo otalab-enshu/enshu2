@@ -10,6 +10,18 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+
+const int FONT = cv::FONT_HERSHEY_SIMPLEX;
+const double FONT_SIZE = 0.8;
+const double FONT_THICKNESS = 2;
+const cv::Scalar FONT_RED = cv::Scalar(0, 0, 255);
+const cv::Scalar FONT_GREEN = cv::Scalar(0, 255, 0);
+const cv::Scalar FONT_BLUE = cv::Scalar(255, 0, 0);
+const cv::Scalar FONT_BLACK = cv::Scalar(0, 0, 0);
+const cv::Scalar FONT_WHITE = cv::Scalar(255, 255, 255);
+const std::vector<cv::Scalar> COLORS = { cv::Scalar(200, 0, 0),   cv::Scalar(0, 200, 0),   cv::Scalar(0, 0, 200),
+                                        cv::Scalar(200, 0, 200), cv::Scalar(200, 200, 0), cv::Scalar(0, 200, 200) };
+
 struct BBox
 {
   cv::Point2i ul;
@@ -27,12 +39,20 @@ private:
   ros::Subscriber result_sub_;
   std::vector<BBox> detection_;
 
+  ros::Rate rate_;
   ros::Time t_start_;
 
+  int width_;
+  int height_;
+  double center_i_;
+  double center_j_;
+
+  int font_baseline_;
+  std::hash<std::string> hasher_;
+
 public:
-  DetectionCamera()
+  DetectionCamera(ros::NodeHandle& n, ros::Rate& rate):rate_(rate)
   {
-    ros::NodeHandle n;
     image_transport::ImageTransport it(n);
     image_sub_ = it.subscribe("/camera/color/image_raw", 2, &DetectionCamera::image_callback, this,
                               image_transport::TransportHints("compressed"));
@@ -56,6 +76,10 @@ public:
       return;
     }
     img_ = rgb_ptr->image.clone();
+    width_ = img_.cols;
+    height_ = img_.rows;
+    center_i_ = width_ / 2.0;
+    center_j_ = height_ / 2.0;
   }
 
   void result_callback(const enshu_msgs::BboxArrayConstPtr& msg)
@@ -81,6 +105,42 @@ public:
   double get_time()
   {
     return (ros::Time::now() - t_start_).toSec();
+  }
+
+  void add_command(double v, double omega)
+  {
+    // Command
+    std::ostringstream ostr;
+    ostr.precision(3);
+    ostr << "[v:" << v << ", omega:" << omega << "]";
+    std::string text_contents = ostr.str();
+    int baseline;
+    cv::Size font_size = cv::getTextSize(text_contents, FONT, 1.5 * FONT_SIZE, 3, &baseline);
+    cv::Point2i font_loc = cv::Point2i(center_i_ - font_size.width / 2, center_j_ + font_size.height / 2 + baseline);
+    cv::putText(img_, text_contents, font_loc, FONT, 1.5 * FONT_SIZE, cv::Scalar(255, 255, 255), FONT_THICKNESS);
+  }
+
+  void add_detection()
+  {
+    // Detection
+    for (int i = 0; i < detection_.size(); i++)
+    {
+      cv::Scalar color = COLORS[hasher_(detection_[i].label) % COLORS.size()];
+      cv::Point2i font_loc = cv::Point2i(detection_[i].ul.x, detection_[i].ul.y - 5);
+      cv::putText(img_, detection_[i].label, font_loc, FONT, 0.8, color, 2);
+      cv::rectangle(img_, cv::Rect(detection_[i].ul, detection_[i].br), color, 2);
+    }
+  }
+
+  void show_img()
+  {
+    // resize for visualization
+    cv::resize(img_, img_, cv::Size(), 2, 2);
+    cv::imshow("img", img_);
+    if (cv::waitKey(10) == 27)
+    {
+      end();
+    }
   }
 
   cv::Mat get_img()

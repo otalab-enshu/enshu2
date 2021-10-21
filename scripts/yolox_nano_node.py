@@ -18,7 +18,7 @@ class YoloxNode:
 
         # Yolox module from https://github.com/Kazuhito00/YOLOX-ONNX-TFLite-Sample
         rospy.loginfo("Setup Yolox nano model")
-        self.targets = ["stop sign", "traffic light", "person"]
+        self.targets = ["stop sign", "traffic light", "person", "cat"]
         rospy.loginfo(f"Target labels: {self.targets}")
         self.show_img = False
         self.score_th = 0.3
