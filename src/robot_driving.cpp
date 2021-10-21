@@ -78,10 +78,7 @@ int main(int argc, char** argv)
       /// Show image
       camera.show_img();
     }
-    if (robot.get_time()>10)
-    {
-      robot.end();
-    }
+    
     //////////// <write your code to here> /////////////
     ros::spinOnce();
     rate.sleep();
