@@ -29,6 +29,8 @@ class MyRobot
         double theta_ = 0.0;
         ros::Time t_start_;
         ros::Rate rate_;
+        double v_ = 0.0;
+        double omega_ = 0.0;
 
     double clip(double n, double abs_max) 
     {
@@ -90,6 +92,8 @@ class MyRobot
 
         void move(double v, double omega)
         {
+            v_ = v;
+            omega_ = omega;
             geometry_msgs::Twist msg;
             msg.linear.x = clip(v, BURGER_MAX_LIN_VEL);
             msg.angular.z = clip(omega, BURGER_MAX_ANG_VEL);
@@ -100,6 +104,8 @@ class MyRobot
 
         void stop()
         {
+            v_ = 0.0;
+            omega_ = 0.0;
             geometry_msgs::Twist msg;
             msg.linear.x = 0.;
             msg.angular.z = 0.;
@@ -113,6 +119,10 @@ class MyRobot
             int count = int(t*MAIN_RATE);
             for(int i = 0; i <  count; i++)
             {
+                geometry_msgs::Twist msg;
+                msg.linear.x = clip(v_, BURGER_MAX_LIN_VEL);
+                msg.angular.z = clip(omega_, BURGER_MAX_ANG_VEL);
+                pub_vel_.publish(msg);
                 ros::spinOnce();
                 rate_.sleep();
             }
