@@ -10,7 +10,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-
 const int FONT = cv::FONT_HERSHEY_SIMPLEX;
 const double FONT_SIZE = 0.8;
 const double FONT_THICKNESS = 2;
@@ -20,7 +19,7 @@ const cv::Scalar FONT_BLUE = cv::Scalar(255, 0, 0);
 const cv::Scalar FONT_BLACK = cv::Scalar(0, 0, 0);
 const cv::Scalar FONT_WHITE = cv::Scalar(255, 255, 255);
 const std::vector<cv::Scalar> COLORS = { cv::Scalar(200, 0, 0),   cv::Scalar(0, 200, 0),   cv::Scalar(0, 0, 200),
-                                        cv::Scalar(200, 0, 200), cv::Scalar(200, 200, 0), cv::Scalar(0, 200, 200) };
+                                         cv::Scalar(200, 0, 200), cv::Scalar(200, 200, 0), cv::Scalar(0, 200, 200) };
 
 struct BBox
 {
@@ -50,8 +49,10 @@ private:
   int font_baseline_;
   std::hash<std::string> hasher_;
 
+  bool is_finished_ = false;
+
 public:
-  DetectionCamera(ros::NodeHandle& n, ros::Rate& rate):rate_(rate)
+  DetectionCamera(ros::NodeHandle& n, ros::Rate& rate) : rate_(rate)
   {
     image_transport::ImageTransport it(n);
     image_sub_ = it.subscribe("/camera/color/image_raw", 2, &DetectionCamera::image_callback, this,
@@ -155,6 +156,11 @@ public:
 
   void end()
   {
-    ros::shutdown();
+    is_finished_ = true;
+  }
+
+  bool is_finished()
+  {
+    return is_finished_;
   }
 };

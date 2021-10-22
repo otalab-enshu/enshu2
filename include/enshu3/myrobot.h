@@ -32,6 +32,8 @@ class MyRobot
         double v_ = 0.0;
         double omega_ = 0.0;
 
+        bool is_finished_ = false;
+
     double clip(double n, double abs_max) 
     {
         abs_max = std::abs(abs_max);
@@ -159,6 +161,10 @@ class MyRobot
             turtlebot3_msgs::Sound s;
             s.value = OFF;
             pub_sound_.publish(s);
-            ros::shutdown();
+            is_finished_ = true;
+        }
+
+        bool is_finished(){
+            return is_finished_;
         }
 };
