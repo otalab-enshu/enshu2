@@ -11,6 +11,10 @@ scp enshu3/launch/*_realsense.launch ubuntu@{IP_TURTLEBOT3}:~
 
 # Run the following as well if you don't have enshu_msgs
 git clone https://github.com/asamalab/enshu_msgs.git
+# Run the following as well if you don't have enshu1
+git clone https://github.com/asamalab/enshu1.git
+# Run the following as well if you don't have enshu2
+git clone https://github.com/asamalab/enshu2.git
 
 cd ..
 catkin_make

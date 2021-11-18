@@ -6,6 +6,7 @@
 
 #include "enshu3/detection_camera.hpp"
 #include "enshu3/myrobot.h"
+#include "enshu3/utils.hpp"
 
 int main(int argc, char** argv)
 {
@@ -17,7 +18,7 @@ int main(int argc, char** argv)
   MyRobot robot(n, rate);
 
   // Main loop
-  while (ros::ok())
+  while (ros::ok() && !robot.is_finished() && !camera.is_finished())
   {
     //////////// <write your code from here> /////////////
 
