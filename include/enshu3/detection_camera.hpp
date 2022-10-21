@@ -136,8 +136,9 @@ public:
   void show_img()
   {
     // resize for visualization
-    cv::resize(img_, img_, cv::Size(), 2, 2);
-    cv::imshow("img", img_);
+    cv::Mat img;
+    cv::resize(img_, img, cv::Size(), 2, 2);
+    cv::imshow("img", img);
     if (cv::waitKey(10) == 27)
     {
       end();
