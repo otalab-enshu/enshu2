@@ -1,0 +1,3 @@
+<launch>
+    <node pkg="enshu2" type="aruco_navi.py" name="marker_distance_calculator" output="screen"/>
+</launch>

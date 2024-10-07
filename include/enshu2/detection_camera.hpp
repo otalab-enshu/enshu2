@@ -1,6 +1,5 @@
 #pragma once
 #include <cv_bridge/cv_bridge.h>
-#include <enshu_msgs/BboxArray.h>
 #include <image_transport/image_transport.h>
 #include <ros/package.h>
 #include <ros/ros.h>
@@ -21,22 +20,11 @@ const cv::Scalar FONT_WHITE = cv::Scalar(255, 255, 255);
 const std::vector<cv::Scalar> COLORS = { cv::Scalar(200, 0, 0),   cv::Scalar(0, 200, 0),   cv::Scalar(0, 0, 200),
                                          cv::Scalar(200, 0, 200), cv::Scalar(200, 200, 0), cv::Scalar(0, 200, 200) };
 
-struct BBox
-{
-  cv::Point2i ul;
-  cv::Point2i br;
-  std::string label;
-  double score;
-};
-
 class DetectionCamera
 {
 private:
   image_transport::Subscriber image_sub_;
   cv::Mat img_;
-
-  ros::Subscriber result_sub_;
-  std::vector<BBox> detection_;
 
   ros::Rate rate_;
   ros::Time t_start_;
@@ -58,8 +46,6 @@ public:
     image_sub_ = it.subscribe("/camera/color/image_raw", 2, &DetectionCamera::image_callback, this,
                               image_transport::TransportHints("compressed"));
     ROS_INFO("Subscribe image: /camera/color/image_raw");
-    result_sub_ = n.subscribe("/bbox_results", 2, &DetectionCamera::result_callback, this);
-    ROS_INFO("Subscribe hand detection results: /bbox_results");
     t_start_ = ros::Time::now();
   }
 
@@ -83,25 +69,6 @@ public:
     center_j_ = height_ / 2.0;
   }
 
-  void result_callback(const enshu_msgs::BboxArrayConstPtr& msg)
-  {
-    detection_.clear();
-    for (int i = 0; i < msg->bbox.size(); i++)
-    {
-      // BBox struct
-      // cv::Point2i ul;
-      // cv::Point2i br;
-      // std::string label;
-      // double score;
-      BBox bbox = {
-        cv::Point2i(msg->bbox[i].ul.x, msg->bbox[i].ul.y),
-        cv::Point2i(msg->bbox[i].br.x, msg->bbox[i].br.y),
-        msg->bbox[i].label,
-        msg->bbox[i].score,
-      };
-      detection_.push_back(bbox);
-    }
-  }
 
   double get_time()
   {
@@ -121,17 +88,6 @@ public:
     cv::putText(img_, text_contents, font_loc, FONT, 1.5 * FONT_SIZE, cv::Scalar(255, 255, 255), FONT_THICKNESS);
   }
 
-  void add_detection()
-  {
-    // Detection
-    for (int i = 0; i < detection_.size(); i++)
-    {
-      cv::Scalar color = COLORS[hasher_(detection_[i].label) % COLORS.size()];
-      cv::Point2i font_loc = cv::Point2i(detection_[i].ul.x, detection_[i].ul.y - 5);
-      cv::putText(img_, detection_[i].label, font_loc, FONT, 0.8, color, 2);
-      cv::rectangle(img_, cv::Rect(detection_[i].ul, detection_[i].br), color, 2);
-    }
-  }
 
   void show_img()
   {
@@ -150,10 +106,6 @@ public:
     return img_;
   }
 
-  std::vector<BBox> get_detection()
-  {
-    return detection_;
-  }
 
   void end()
   {

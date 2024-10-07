@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="aruco_ros" type="marker_publisher" name="aruco_marker_publisher" output="screen">
+        <param name="marker_size" value="0.048"/>
+        <remap from="image" to="/camera/color/image_raw"/>
+        <remap from="camera_info" to="/camera/color/camera_info"/>
+        <param name="camera_frame" value="camera_color_optical_frame" />
+        <param name="publish_tf" value="false" />
+    </node>
+</launch>
