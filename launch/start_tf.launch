@@ -1,0 +1,8 @@
+<launch>
+    <!-- Static transform between world and odom -->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 world odom 1000" output="screen" />
+    
+    <!-- Static transform between base and camera -->
+    <node pkg="tf" type="static_transform_publisher" name="base_to_camera" args="0 0.03 0 0 0 0 base_footprint camera_link 1000" output="screen" />
+
+</launch>

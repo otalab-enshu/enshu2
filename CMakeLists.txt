@@ -9,7 +9,7 @@ project(enshu2)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   cv_bridge
-  aruco_ros
+  message_generation
   geometry_msgs
   image_transport
   roscpp
@@ -57,6 +57,20 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
 # )
+add_message_files(
+  FILES
+  Marker.msg
+  MarkerArray.msg
+  MarkerInfo.msg
+  MarkerInfoArray.msg
+)
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  geometry_msgs
+)
+
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -107,13 +121,15 @@ find_package(catkin REQUIRED COMPONENTS
 ## LIBRARIES: libraries you create in this project that dependent projects also need
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
-catkin_package(
+#catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES enshu2
 #  CATKIN_DEPENDS cv_bridge enshu_msgs geometry_msgs image_transport roscpp sensor_msgs std_msgs turtlebot3_msgs
 #  DEPENDS system_lib
+#)
+catkin_package(
+  CATKIN_DEPENDS message_runtime std_msgs geometry_msgs
 )
-
 ###########
 ## Build ##
 ###########
@@ -166,6 +182,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/aruco_navi.py
+   scripts/aruco_detector.py
+   scripts/aruco_distance.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

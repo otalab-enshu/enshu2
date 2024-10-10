@@ -1,3 +1,0 @@
-[submodule "third_party/YOLOX-ONNX-TFLite-Sample"]
-	path = third_party/YOLOX-ONNX-TFLite-Sample
-	url = https://github.com/Kazuhito00/YOLOX-ONNX-TFLite-Sample.git

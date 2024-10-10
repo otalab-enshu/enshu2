@@ -1,0 +1,1 @@
+MarkerInfo[] markers  # Array of detected markers

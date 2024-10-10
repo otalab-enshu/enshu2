@@ -1,0 +1,4 @@
+<launch>
+    <include file="$(find enshu2)/launch/start_tf.launch" />
+    <node pkg="enshu2" type="aruco_detector.py" name="marker_detector" output="screen"/>
+</launch>

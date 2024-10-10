@@ -1,8 +1,5 @@
 <launch>
-    <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 world odom 100">
-    </node>
-    <node pkg="tf" type="static_transform_publisher" name="base_to_camera" args="0 0.03 0 0 0 0 base_footprint camera_link 100">
-    </node>
-    <node pkg="enshu4" type="robot_driving" name="robot_driving_node" output="screen">
-    </node>
+    <!-- Your robot driving node -->
+    <node pkg="enshu2" type="robot_driving" name="robot_driving_node" output="screen" />
 </launch>
+
