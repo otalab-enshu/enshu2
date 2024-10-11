@@ -4,7 +4,7 @@
 ```bash
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src
-git clone https://github.com/asamalab/enshu2.git
+git clone https://github.com/otalab-enshu/enshu2.git
 
 cd ..
 catkin_make
