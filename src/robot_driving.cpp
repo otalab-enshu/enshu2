@@ -38,47 +38,42 @@ int main(int argc, char** argv)
       std::vector<enshu2::MarkerInfo> markers=camera.get_marker();
 
       ROS_INFO("Markers received: %lu", markers.size());
-
-      for (const auto& marker : markers)
-      {
-        // Access marker information
-        int marker_id = marker.id;
-        double distance = marker.distance;
-        double theta = marker.theta;
-        double yaw = marker.yaw;
-
-        double center_x = 0;
-        double center_y = 0;
-
-        // You can also iterate through the corners of the marker
-        for (const auto& corner : marker.corners)
-        {
-            center_x = center_x + corner.x;
-            center_y = center_y + corner.y;
-        }
-        center_x = center_x/4;
-        center_y = center_y/4;
-
-        // Print the marker's information
-        ROS_INFO("Marker ID: %d, Distance: %.2f meters, Theta: %.2f radians, Yaw: %.2f radians", 
-                  marker_id, distance, theta, yaw);
-
-
-        if(marker_id==5){
-          if(theta<-0.2){
-            omega=-0.2;
-          }
-          else if(theta>0.2){
-            omega=0.2;
-          }
-          else{
-            omega=0;
-          }
-        }
-
+      if(markers.size()==0&&ls!=0&&rs!=0){ //no marker detected, use sonar 
+        v=0.0;
+        omega=0.0;
+        robot.move(v, omega);
       }
-      // Send command to robot
-      robot.move(v, omega);
+      else{ //marker detected, set robot speed based on marker
+        for (const auto& marker : markers)
+        {
+          // Access marker information
+          int marker_id = marker.id;
+          double distance = marker.distance;
+          double theta = marker.theta;
+          double yaw = marker.yaw;
+
+          // Print the marker's information
+          ROS_INFO("Marker ID: %d, Distance: %.2f meters, Theta: %.2f radians, Yaw: %.2f radians", 
+                    marker_id, distance, theta, yaw);
+
+
+          if(marker_id==5){
+            if(theta<-0.2){
+              omega=-0.2;
+            }
+            else if(theta>0.2){
+              omega=0.2;
+            }
+            else{
+              omega=0;
+            }
+            
+          }
+
+        }
+        // Send command to robot
+        robot.move(v, omega);
+      }
 
       /// Display robot command
       //camera.add_command(v, omega);
